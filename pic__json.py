@@ -72,7 +72,7 @@ def draw_text_from_json(image, json_path, yolo_boxes, threshold=0.1):
     for idx, (x1, y1, x2, y2, class_name) in enumerate(yolo_boxes):
         task_number = extract_task_number(class_name)
         if task_number is None:
-            continue  # Пропускаем, если не получилось получить номер
+            continue  
 
         found_texts = []
         for (tx, ty, tw, th, ttext) in words_data:
@@ -272,18 +272,14 @@ def main():
                 color = [(255, 0, 0), (0, 255, 0), (0, 0, 255)][c % 3]
                 cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
 
-    # Получаем словарь {номер задания: "сырой текст"}
     extracted_texts = draw_text_from_json(image, json_path, all_boxes, threshold)
 
-    # --- Новая часть: исправление опечаток ---
     dict_path = r'c:\Users\Пользователь\Desktop\prog\ru_full_glower.txt'  # Путь к твоему словарю с весами
     sym_spell = load_spell_checker(dict_path, term_index=0, count_index=1)
 
-    # --- Исправление опечаток в целом словаре ---
     print("\n[INFO] Исправляем опечатки в каждом тексте...")
     corrected_dict = correct_spelling_in_dict(extracted_texts, sym_spell)
 
-    # --- Вывод различий ---
     for task_num in sorted(extracted_texts.keys()):
         original = extracted_texts[task_num]
         corrected = corrected_dict[task_num]
